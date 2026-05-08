@@ -1,19 +1,28 @@
 <?php
-// Erlaubte APIs (Whitelist – verhindert Missbrauch als offener Proxy)
-$allowed = [
-    'list'        => 'https://www.vogelwarte.ch/wp-content/assets/json/bird/list_de.json',
-    'species_700' => 'https://www.vogelwarte.ch/wp-content/assets/json/bird/species/700_de.json',
-];
+// Welcher Endpoint? 'list' = Vogelliste, 'species' = einzelne Art
+$endpoint = $_GET['endpoint'] ?? '';
 
-// Parameter aus der URL lesen, z. B. ?endpoint=list
-$key = $_GET['endpoint'] ?? '';
-if (!isset($allowed[$key])) {
+if ($endpoint === 'list') {
+    $url = 'https://www.vogelwarte.ch/wp-content/assets/json/bird/list_de.json';
+
+} elseif ($endpoint === 'species') {
+    $id = $_GET['id'] ?? '';
+
+    // Nur reine Zahlen erlauben – verhindert Manipulation der URL
+    if (!ctype_digit($id)) {
+        http_response_code(400);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['error' => 'Invalid id']);
+        exit;
+    }
+    $url = "https://www.vogelwarte.ch/wp-content/assets/json/bird/species/{$id}_de.json";
+
+} else {
     http_response_code(400);
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode(['error' => 'Unknown endpoint']);
     exit;
 }
-$url = $allowed[$key];
 
 // do request
 $ch = curl_init($url);

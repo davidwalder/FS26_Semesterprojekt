@@ -11,9 +11,22 @@
 //const data = await loadData();
 //console.log(data); // gibt die Daten der API oder false in der Konsole aus
 
+// DOM element 
+const container = document.querySelector('#content')
 
-async function loadData(endpoint) {
-    const url = `PHP-CORS-BRIDGE/api_cors_bridge.php?endpoint=${endpoint}`;
+// daten holen
+async function loadBirdList () {
+    return await fetchFromBridge ('list');
+}
+
+async function loadSpeciesInfo (id) {
+    return await fetchFromBridge ('species', id);
+}
+
+async function fetchFromBridge(endpoint, id = null) {
+    let url = `PHP-CORS-BRIDGE/api_bridge_auto.php?endpoint=${endpoint}`;
+    if (id !== null) url += `&id=${id}`;
+
     try {
         const response = await fetch(url);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -25,8 +38,20 @@ async function loadData(endpoint) {
 }
 
 (async () => {
-    const list    = await loadData('list');
-    const species = await loadData('species_700');
+    const list    = await loadBirdList();
+    const species = await loadSpeciesInfo(700);
     console.log('Bird list:', list);
     console.log('Species 700:', species);
 })();
+
+// daten darstellen
+function showBirds(id) {
+    // container leeren
+    container.innerHTML = '';
+}
+
+// daten filtern 
+let filtered_birds = all_birds.filter(bird => {
+    return 
+})
+
