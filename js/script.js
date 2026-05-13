@@ -37,21 +37,65 @@ async function fetchFromBridge(endpoint, id = null) {
     }
 }
 
+let all_birds = [];
+let all_infos = [];
+
+
 (async () => {
-    const list    = await loadBirdList();
-    const species = await loadSpeciesInfo(700);
-    console.log('Bird list:', list);
-    console.log('Species 700:', species);
+     all_birds = await loadBirdList();
+     all_infos = await loadSpeciesInfo(700);
+    console.log('Bird list:', all_birds);
+    console.log('Species 700:', all_infos);
 })();
 
-// daten darstellen
-function showBirds(id) {
+// Daten darstellen
+function showSpeciesInfo(eigenschaften){}
+function showBirdsList(artid){
     // container leeren
     container.innerHTML = '';
+
+    // daten filtern
+    let filtered_birds = all_birds.filter(bird => {
+        return bird.lebensraum === artid;
+    });
+    if (artid === '' || artid === undefined) {
+        filtered_birds = all_birds;
+    }
+
+    // daten aufbereiten und in html schreiben
+    filtered_birds.forEach(bird => {
+        // einzelne card erstellen
+        const card = document.createElement('div');
+
+        // h2 mit name erstellen & befüllen
+        const name = document.createElement('h2');
+        name.innerText = bird.artname;   // Feld heisst in deiner API "artname", nicht "name"
+        
+        // p mit Lebensraum erstellen & befüllen
+        //const text = all_infos?.eigenschaften?.lebensraum ?? 'unbekannt';
+        const lebensraum = document.createElement('p');
+        lebensraum.innerText = bird.eigenschaften.lebensraum || 'Nichts definiert';
+        
+        // p mit allg. infos
+        const infos = document.createElement('p');
+        infos.innerText = bird.infos;
+
+        container.appendChild(card);
+        card.appendChild(name);
+        card.appendChild(lebensraum);
+        card.appendChild(infos);
+
+    });
 }
+showBirdsList('');
+showSpeciesInfo('');
 
-// daten filtern 
-let filtered_birds = all_birds.filter(bird => {
-    return 
+// -> filtern
+const filter_select = document.querySelector('#filter');
+filter_select.addEventListener('change', function(event) {
+    // filterwert auslesen
+    const selected_filter = event.target.value;
+    // gefilterte daten anzeigen
+    showBirdsList(selected_filter)
+    showSpeciesInfo(selected_filter)
 })
-
