@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <html lang="de">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Caveat+Brush&display=swap');
+</style>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,15 +12,29 @@
 </head>
 <body>
     <header>
-        <h1>Vorlage für interaktive Medien II</h1>
+        <h1>Voegle.ch</h1>
+        <h2>Finde deine Vögel</h2>
+        <aside id="warenkorb">
+    <h2 id="wanderliste">Meine Wanderliste</h2>
+</aside>
 
     </header>
     <main>
-        <h2>Main Content</h2>
-        <p>This is the main content of the page.</p>
+        <h3>Schweizer Vögel</h3>
+        <p>Suche nach Lebensräumen:</p>
 
         <select id="filter">
-            
+            <option value="">Alle</option>
+            <option value="1">Kulturland & Gebirge</option>
+            <option value="2">Seen</option>
+            <option value="3">Fliessgewässer</option>
+            <option value="4">Gebirge</option>
+            <option value="5">Wald</option>
+            <option value="6">Feuchtgebiete</option>
+            <option value="7">Wald & Kulturland</option>
+            <option value="8">Feuchtgebiete & Gewässer </option>
+            <option value="9">Fliessgewässer & Wald</option>
+            <option value="10">Siedlungen</option>
         </select>
         <div id="content"></div>
     </main>
