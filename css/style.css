@@ -32,12 +32,57 @@ h3 {
 p {
     font-family: "Caveat Brush";
 }
+
+/* sidebar titel*/
 #wanderliste {
-    text-align: right;
+    text-align: left;
 }
 
 body {
     background-color: white;
+}
+
+#warenkorb {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 400px;
+    height: 100%;
+    background: beige;
+    transition: right 0.3s ease;
+    padding: 20px;
+    box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+    overflow-y: auto;
+
+
+}
+
+#warenkorb-liste {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+.warenkorb-card {
+    background-color: white;
+    font-family: "Caveat Brush";
+}
+
+
+.warenkorb-card img {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+}
+
+#warenkorb.offen {
+    right: 0;
+}
+
+#warenkorb-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
 #content {
@@ -62,4 +107,49 @@ body {
 
 .card.ausgewaehlt {
     border: 3px solid green;
+}
+
+/* Media Abstufungen */
+
+/* Sidebar offen → 3er Grid */
+#content.sidebar-offen {
+    grid-template-columns: repeat(3, 1fr);
+    margin-right: 400px;
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+    #content {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    #content.sidebar-offen {
+        grid-template-columns: repeat(1, 1fr);
+        margin-right: 300px;
+    }
+
+    #warenkorb {
+        width: 300px;
+        right: -300px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    #content {
+        grid-template-columns: repeat(1, 1fr);
+    }
+
+    #warenkorb {
+        width: 100%;
+        right: -100%;
+    }
+
+    #warenkorb.offen {
+        right: 0;
+    }
+
+    #warenkorb-liste {
+        grid-template-columns: repeat(1, 1fr);
+    }
 }

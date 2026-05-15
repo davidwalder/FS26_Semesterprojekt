@@ -26,6 +26,7 @@ async function fetchFromBridge(endpoint, id = null) {
 
 let all_birds = [];
 let all_infos = [];
+let warenkorb = [];
 
 
 (async () => {
@@ -51,7 +52,7 @@ const lebensraumMap = {
     "10": "Siedlungen"
 };
 
-// detail lebensraum map mit detailwerten aus API
+// detail lebensraum map mit 425 detailwerten aus API
 const detailMap = {
     "10": ["3"],
     "20": ["3"],
@@ -453,7 +454,7 @@ function showBirdsList(artid){
         filtered_birds = all_birds;
     }
 
-   filtered_birds.forEach(bird => {
+filtered_birds.forEach(bird => {
     const card = document.createElement('div');
     const name = document.createElement('h2');
     name.innerText = bird.artname;
@@ -465,14 +466,21 @@ function showBirdsList(artid){
     const infos = document.createElement('p');
     infos.innerText = 'Klicke für mehr Infos';
 
-    // img erstellen und mit bild-url befüllen
-    const image = document.createElement('img')
+    const image = document.createElement('img');
     image.src = `https://www.vogelwarte.ch/wp-content/uploads/2026/03/${bird.artid}_1.jpg`;
     image.alt = `Bild von ${bird.artname}`;
 
-    // Beim Klick auf die Karte: Detailinfos nachladen
+    // ← button hier, VOR den listeners
+    const button = document.createElement('button');
+    button.innerText = '+ Zur Wanderliste';
+
+    const bereitsImWarenkorb = warenkorb.some(b => b.artid === bird.artid);
+    button.innerText = bereitsImWarenkorb ? '✓ Auf der Liste' : '+ Zur Wanderliste';
+    if (bereitsImWarenkorb) card.classList.add('ausgewaehlt');
+
+    // ← card listener
     card.addEventListener('click', async () => {
-        if (infos.innerText !== 'Klicke für mehr Infos'){
+        if (infos.innerText !== 'Klicke für mehr Infos') {
             infos.innerText = 'Klicke für mehr Infos';
             return;
         }
@@ -481,50 +489,53 @@ function showBirdsList(artid){
             infos.innerText = detail.infos || 'Keine Infos verfügbar';
             lebensraum.innerText = detail.eigenschaften?.lebensraum || lebensraum.innerText;
         }
+    }); // ← card listener schliesst hier
 
-    // «Warenkorb» für einzelne Vögel
-let warenkorb = [];
-
-    const button = document.createElement('button');
-    button.innerText = '+ Zur Wanderliste';
-
+    // ← button listener, NACH dem card listener
     button.addEventListener('click', () => {
-    const index = warenkorb.findIndex(b => b.artid === bird.artid);
-    if (index === -1) {
-        warenkorb.push(bird);
-        button.innerText = '✓ Auf der Liste';
-        card.classList.add('ausgewaehlt');
-    } else {
-        warenkorb.splice(index, 1);
-        button.innerText = '+ Zur Wanderliste';
-        card.classList.remove('ausgewaehlt');
-    }
-    updateWarenkorb();
-     
-    card.appendChild(button);
-
-    function updateWarenkorb() {
-    const warenkorbContainer = document.querySelector('#warenkorb');
-    warenkorbContainer.innerHTML = '';
-    
-    warenkorb.forEach(bird => {
-        const eintrag = document.createElement('p');
-        eintrag.innerText = bird.artname;
-        warenkorbContainer.appendChild(eintrag);
+        const index = warenkorb.findIndex(b => b.artid === bird.artid);
+        if (index === -1) {
+            warenkorb.push(bird);
+            button.innerText = '✓ Auf der Liste';
+            card.classList.add('ausgewaehlt');
+        } else {
+            warenkorb.splice(index, 1);
+            button.innerText = '+ Zur Wanderliste';
+            card.classList.remove('ausgewaehlt');
+        }
+        updateWarenkorb();
     });
-}
-
-});
-
-
-});
 
     container.appendChild(card);
     card.appendChild(image);
     card.appendChild(name);
     card.appendChild(lebensraum);
     card.appendChild(infos);
+    card.appendChild(button);
 });
+}
+function updateWarenkorb() {
+    const warenkorbContainer = document.querySelector('#warenkorb-liste');
+    warenkorbContainer.innerHTML = '';
+    warenkorb.forEach(bird => {
+        const eintrag = document.createElement('div');
+        eintrag.classList.add('warenkorb-card');
+        
+        const bild = document.createElement('img');
+        bild.src = `https://www.vogelwarte.ch/wp-content/uploads/2026/03/${bird.artid}_1.jpg`;
+        bild.alt = `Bild von ${bird.artname}`;
+
+        const name = document.createElement('p');
+        name.innerText = bird.artname;
+
+        const lebensraum = document.createElement('p');
+        lebensraum.innerText = lebensraumMap[bird.filterlebensraum] || 'Unbekannt';
+
+        eintrag.appendChild(bild);
+        eintrag.appendChild(name);
+        eintrag.appendChild(lebensraum);
+        warenkorbContainer.appendChild(eintrag);
+    });
 }
 
 // -> filtern
@@ -536,3 +547,14 @@ filter_select.addEventListener('change', function(event) {
     showBirdsList(selected_filter)
     showSpeciesInfo(selected_filter)
 })
+
+const warenkorbToggle = document.querySelector('#warenkorb-toggle');
+warenkorbToggle.addEventListener('click', () => {
+    document.querySelector('#warenkorb').classList.toggle('offen');
+    document.querySelector('#content').classList.toggle('sidebar-offen');
+});
+
+document.querySelector('#warenkorb-schliessen').addEventListener('click', () => {
+    document.querySelector('#warenkorb').classList.remove('offen');
+    document.querySelector('#content').classList.remove('sidebar-offen');
+});
