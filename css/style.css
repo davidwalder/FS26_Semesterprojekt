@@ -10,18 +10,16 @@
   font-style: normal;
 }
 
+main {
+    margin-left: 256px;
+}
+
 h1 {
-    text-align: center;
     font-family: "Caveat Brush";
 }
 
 h2 {
     
-    font-family: "Caveat Brush";
-}
-
-#h2-header {
-    text-align: center;
     font-family: "Caveat Brush";
 }
 
@@ -32,8 +30,79 @@ h3 {
 p {
     font-family: "Caveat Brush";
 }
+            
+        /* Navigation*/
 
-/* sidebar titel*/
+#sidebar-nav {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 256px;
+    height: 100%;
+    background: white;
+    border-right: 1px solid #e2e8f0;
+    padding: 24px;
+    z-index: 100;
+}
+
+.nav-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.nav-titel {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 24px;
+    color: #0f172b;
+}
+
+.nav-arrows {
+    display: flex;
+    gap: 4px;
+}
+
+.nav-arrow {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 20px;
+    color: #0f172b;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.nav-link {
+    display: block;
+    height: 40px;
+    line-height: 40px;
+    padding-left: 16px;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    color: #314158;
+    text-decoration: none;
+}
+
+.nav-link.active {
+    background: #0f172b;
+    color: white;
+}
+
+
+        /* sidebar titel*/
+
 #wanderliste {
     text-align: left;
 }
@@ -100,9 +169,10 @@ body {
         }
        
     }
+
+}
 .card {
     width: 200px;
-}
 }
 
 .card.ausgewaehlt {
