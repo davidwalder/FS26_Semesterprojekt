@@ -29,13 +29,17 @@ let all_infos = [];
 let warenkorb = [];
 
 
+//(async () => {
+    // all_birds = await loadBirdList();
+   //  all_infos = await loadSpeciesInfo(700);
+// console.log('Bird list:', all_birds);
+   // console.log('Species 700:', all_infos);
+  //  showBirdsList('');
+  //  showSpeciesInfo('');
+//})();
+
 (async () => {
-     all_birds = await loadBirdList();
-     all_infos = await loadSpeciesInfo(700);
-    console.log('Bird list:', all_birds);
-    console.log('Species 700:', all_infos);
-    showBirdsList('');
-    showSpeciesInfo('');
+    all_birds = await loadBirdList();
 })();
 
 // lebensraum map mit listenwerten aus API und bedeutungen
@@ -446,9 +450,12 @@ function showBirdsList(artid){
     container.innerHTML = '';
 
     // daten filtern
-  let filtered_birds = all_birds.filter(bird => {
-    return detailMap[bird.artid]?.includes(artid) ?? false;
-});
+  const filterValues = artid ? artid.split(',') : [];
+    let filtered_birds = artid === '' || artid === undefined
+    ? all_birds
+    : all_birds.filter(bird =>
+        filterValues.some(f => detailMap[bird.artid]?.includes(f) ?? false)
+);
 
     if (artid === '' || artid === undefined) {
         filtered_birds = all_birds;
@@ -539,22 +546,31 @@ function updateWarenkorb() {
 }
 
 // -> filtern
-const filter_select = document.querySelector('#filter');
-filter_select.addEventListener('change', function(event) {
+//const filter_select = document.querySelector('#filter');
+//filter_select.addEventListener('change', function(event) {
     // filterwert auslesen
-    const selected_filter = event.target.value;
+    //const selected_filter = event.target.value;
     // gefilterte daten anzeigen
-    showBirdsList(selected_filter)
-    showSpeciesInfo(selected_filter)
-})
+   // showBirdsList(selected_filter)
+    //showSpeciesInfo(selected_filter)
+//})
+const backdrop = document.querySelector('#warenkorb-backdrop');
 
-const warenkorbToggle = document.querySelector('#warenkorb-toggle');
-warenkorbToggle.addEventListener('click', () => {
+document.querySelector('#warenkorb-toggle').addEventListener('click', () => {
     document.querySelector('#warenkorb').classList.toggle('offen');
-    document.querySelector('#content').classList.toggle('sidebar-offen');
+    backdrop.classList.toggle('offen');
 });
-
 document.querySelector('#warenkorb-schliessen').addEventListener('click', () => {
     document.querySelector('#warenkorb').classList.remove('offen');
-    document.querySelector('#content').classList.remove('sidebar-offen');
+    backdrop.classList.remove('offen');
+});
+backdrop.addEventListener('click', () => {
+    document.querySelector('#warenkorb').classList.remove('offen');
+    backdrop.classList.remove('offen');
+});
+
+document.querySelectorAll('#lebensraum-map path[data-filter]').forEach(path => {
+    path.addEventListener('click', () => {
+        showBirdsList(path.dataset.filter);
+    });
 });

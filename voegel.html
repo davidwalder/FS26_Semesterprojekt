@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vögel – Voegle.ch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Inter:wght@500&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header>
+    <nav id="sidebar-nav">
+        <div class="nav-header">
+            <h2 class="nav-titel">Navigation</h2>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html" class="nav-link">Home</a></li>
+            <li><a href="voegel.html" class="nav-link active">Vögel</a></li>
+            <li><a href="#" class="nav-link">Wanderliste</a></li>
+        </ul>
+    </nav>
+    <button id="warenkorb-toggle">Meine Wanderliste 🐦</button>
+    <div id="warenkorb-backdrop"></div>
+    <aside id="warenkorb">
+        <div id="warenkorb-header">
+            <h2 id="wanderliste">Meine Wanderliste</h2>
+            <button id="warenkorb-schliessen">✕</button>
+        </div>
+        <div id="warenkorb-liste"></div>
+    </aside>
+</header>
+<main>
+    <h1>Alle Vögel</h1>
+    <div id="content"></div>
+</main>
+<footer>
+    <p>This is the footer of the page.</p>
+</footer>
+<script src="js/voegel.js" type="module"></script>
+</body>
+</html>
