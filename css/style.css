@@ -14,6 +14,10 @@ main {
     margin-left: 230px;
 }
 
+#map-container {
+    margin-top: -70px;
+}
+
 h1 {
     font-family: "Space Mono";
     text-align: center;
@@ -276,11 +280,6 @@ body {
 @media (max-width: 768px) {
     #content {
         grid-template-columns: repeat(2, 1fr);
-    }
-
-    #content.sidebar-offen {
-        grid-template-columns: repeat(1, 1fr);
-        margin-right: 300px;
     }
 }
 

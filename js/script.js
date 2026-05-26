@@ -25,7 +25,6 @@ async function fetchFromBridge(endpoint, id = null) {
 }
 
 let all_birds = [];
-let all_infos = [];
 let warenkorb = [];
 
 
@@ -461,45 +460,75 @@ function showBirdsList(artid){
         filtered_birds = all_birds;
     }
 
+    function getBadgeInfo(filterlebensraum) {
+    const f = String(filterlebensraum);
+    if (['1', '4'].includes(f))           return { cls: 'badge-berg',     label: 'Berglandschaften' };
+    if (['2', '3', '8', '9'].includes(f)) return { cls: 'badge-wasser',   label: 'Seen & Gewässer' };
+    if (['5', '6', '7'].includes(f))      return { cls: 'badge-wald',     label: 'Wälder & Wiesen' };
+    if (f === '10')                        return { cls: 'badge-siedlung', label: 'Siedlungen' };
+    return { cls: 'badge-siedlung', label: 'Unbekannt' };
+}
+
 filtered_birds.forEach(bird => {
     const card = document.createElement('div');
-    const name = document.createElement('h2');
-    name.innerText = bird.artname;
     card.classList.add('card');
-
-    const lebensraum = document.createElement('p');
-    lebensraum.innerText = lebensraumMap[bird.filterlebensraum] || 'Unbekannt';
-
-    const infos = document.createElement('p');
-    infos.innerText = 'Klicke für mehr Infos';
 
     const image = document.createElement('img');
     image.src = `https://www.vogelwarte.ch/wp-content/uploads/2026/03/${bird.artid}_1.jpg`;
-    image.alt = `Bild von ${bird.artname}`;
+    image.alt = bird.artname;
 
-    // ← button hier, VOR den listeners
+    const cardTitle = document.createElement('div');
+    cardTitle.classList.add('card-title');
+
+    const name = document.createElement('h2');
+    name.innerText = bird.artname;
+
+    const latin = document.createElement('p');
+    latin.classList.add('card-latin');
+    latin.innerText = bird.artname_lat || '';
+
+    cardTitle.appendChild(name);
+    cardTitle.appendChild(latin);
+
+    const cardContent = document.createElement('div');
+    cardContent.classList.add('card-content');
+
+    const badge = document.createElement('span');
+    const badgeInfo = getBadgeInfo(bird.filterlebensraum);
+    badge.classList.add('card-badge', badgeInfo.cls);
+    badge.innerText = badgeInfo.label;
+
+    const details = document.createElement('div');
+    details.classList.add('card-details');
+
+    const groesseRow = document.createElement('div');
+    groesseRow.classList.add('card-detail-row');
+    groesseRow.innerHTML = `<span class="card-detail-label">Größe:</span><span class="card-detail-value">—</span>`;
+
+    const merkmaleRow = document.createElement('div');
+    merkmaleRow.classList.add('card-detail-row');
+    merkmaleRow.innerHTML = `<span class="card-detail-label">Merkmale:</span><span class="card-detail-value">—</span>`;
+
+    details.appendChild(groesseRow);
+    details.appendChild(merkmaleRow);
+    cardContent.appendChild(badge);
+    cardContent.appendChild(details);
+
     const button = document.createElement('button');
-    button.innerText = '+ Zur Wanderliste';
-
     const bereitsImWarenkorb = warenkorb.some(b => b.artid === bird.artid);
     button.innerText = bereitsImWarenkorb ? '✓ Auf der Liste' : '+ Zur Wanderliste';
     if (bereitsImWarenkorb) card.classList.add('ausgewaehlt');
 
-    // ← card listener
     card.addEventListener('click', async () => {
-        if (infos.innerText !== 'Klicke für mehr Infos') {
-            infos.innerText = 'Klicke für mehr Infos';
-            return;
-        }
         const detail = await loadSpeciesInfo(bird.artid);
-        if (detail) {
-            infos.innerText = detail.infos || 'Keine Infos verfügbar';
-            lebensraum.innerText = detail.eigenschaften?.lebensraum || lebensraum.innerText;
+        if (detail?.eigenschaften) {
+            groesseRow.querySelector('.card-detail-value').innerText = detail.eigenschaften.groesse || '—';
+            merkmaleRow.querySelector('.card-detail-value').innerText = detail.eigenschaften.merkmale || '—';
         }
-    }); // ← card listener schliesst hier
+    });
 
-    // ← button listener, NACH dem card listener
-    button.addEventListener('click', () => {
+    button.addEventListener('click', (e) => {
+        e.stopPropagation();
         const index = warenkorb.findIndex(b => b.artid === bird.artid);
         if (index === -1) {
             warenkorb.push(bird);
@@ -513,12 +542,11 @@ filtered_birds.forEach(bird => {
         updateWarenkorb();
     });
 
-    container.appendChild(card);
     card.appendChild(image);
-    card.appendChild(name);
-    card.appendChild(lebensraum);
-    card.appendChild(infos);
+    card.appendChild(cardTitle);
+    card.appendChild(cardContent);
     card.appendChild(button);
+    container.appendChild(card);
 });
 }
 function updateWarenkorb() {
