@@ -15,7 +15,7 @@ main {
 }
 
 #map-container {
-    margin-top: -70px;
+    margin-top: -40px;
 }
 
 h1 {
@@ -265,12 +265,25 @@ body {
     flex: 1;
 }
 
-#lebensraum-map path[data-filter] {
+#berg {
+    fill: #ffb966;
+}
+
+#seen {
+    fill: #70bfef;
+}
+
+#wald {
+    fill: #a3ea8c;
+}
+
+#landschaften path {
+    opacity: 0.5;
     cursor: pointer;
     transition: opacity 0.2s;
 }
-#lebensraum-map path[data-filter]:hover {
-    fill-opacity: 0.8;
+#landschaften path:hover {
+    opacity: 1;
     cursor: pointer;
 }
 
