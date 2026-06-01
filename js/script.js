@@ -31,10 +31,10 @@ let warenkorb = [];
 //(async () => {
     // all_birds = await loadBirdList();
    //  all_infos = await loadSpeciesInfo(700);
-// console.log('Bird list:', all_birds);
-   // console.log('Species 700:', all_infos);
-  //  showBirdsList('');
-  //  showSpeciesInfo('');
+ //console.log('Bird list:', all_birds);
+ //console.log('Species 700:', all_infos);
+   // showBirdsList('');
+   // showSpeciesInfo('');
 //})();
 
 (async () => {
@@ -460,13 +460,12 @@ function showBirdsList(artid){
         filtered_birds = all_birds;
     }
 
-    function getBadgeInfo(filterlebensraum) {
-    const f = String(filterlebensraum);
-    if (['1', '4'].includes(f))           return { cls: 'badge-berg',     label: 'Berglandschaften' };
-    if (['2', '3', '8', '9'].includes(f)) return { cls: 'badge-wasser',   label: 'Seen & Gewässer' };
-    if (['5', '6', '7'].includes(f))      return { cls: 'badge-wald',     label: 'Wälder & Wiesen' };
-    if (f === '10')                        return { cls: 'badge-siedlung', label: 'Siedlungen' };
-    return { cls: 'badge-siedlung', label: 'Unbekannt' };
+function getBadgeInfo(values) {
+    if (!Array.isArray(values)) values = values ? [String(values)] : [];
+    if (values.some(v => ['1', '4'].includes(v)))              return { cls: 'badge-berg',   label: 'Berglandschaften' };
+    if (values.some(v => ['2', '3', '8', '9'].includes(v)))    return { cls: 'badge-wasser', label: 'Seen & Gewässer' };
+    if (values.some(v => ['5', '6', '7', '10'].includes(v)))   return { cls: 'badge-wald',   label: 'Wälder & Wiesen' };
+    return { cls: 'badge-wald', label: 'Wälder & Wiesen' };
 }
 
 filtered_birds.forEach(bird => {
@@ -596,9 +595,29 @@ backdrop.addEventListener('click', () => {
     document.querySelector('#warenkorb').classList.remove('offen');
     backdrop.classList.remove('offen');
 });
+document.querySelector('#nav-wanderliste-link')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.querySelector('#warenkorb').classList.add('offen');
+    backdrop.classList.add('offen');
+});
 
-document.querySelectorAll('#lebensraum-map path[data-filter]').forEach(path => {
-    path.addEventListener('click', () => {
-        showBirdsList(path.dataset.filter);
-    });
+//document.querySelectorAll('#lebensraum-map path[data-filter]').forEach(path => {
+    //path.addEventListener('click', () => {
+        //showBirdsList(path.dataset.filter);
+    //});
+//});
+
+const regionFilterMap = {
+    'berg': '1,4',
+    'wald': '5,6,7,9,10',
+    'seen': '2,3,6,8,9'
+};
+
+['berg', 'wald'].forEach(id => {
+    const el = document.querySelector(`#lebensraum-map #${id}`);
+    if (el) el.addEventListener('click', () => showBirdsList(regionFilterMap[id]));
+});
+
+document.querySelectorAll('#lebensraum-map #seen path').forEach(path => {
+    path.addEventListener('click', () => showBirdsList(regionFilterMap['seen']));
 });

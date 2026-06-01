@@ -26,19 +26,17 @@ async function loadSpeciesInfo(id) {
     return await response.json();
 }
 
-function getBadgeInfo(filterlebensraum) {
-    const f = String(filterlebensraum);
-    if (['1', '4'].includes(f))           return { cls: 'badge-berg',     label: 'Berglandschaften' };
-    if (['2', '3', '8', '9'].includes(f)) return { cls: 'badge-wasser',   label: 'Seen & Gewässer' };
-    if (['5', '6', '7'].includes(f))      return { cls: 'badge-wald',     label: 'Wälder & Wiesen' };
-    if (f === '10')                        return { cls: 'badge-siedlung', label: 'Siedlungen' };
-    return { cls: 'badge-siedlung', label: 'Unbekannt' };
+function getBadgeInfo(values) {
+    if (!Array.isArray(values)) values = values ? [String(values)] : [];
+    if (values.some(v => ['1', '4'].includes(v)))              return { cls: 'badge-berg',   label: 'Berglandschaften' };
+    if (values.some(v => ['2', '3', '8', '9'].includes(v)))    return { cls: 'badge-wasser', label: 'Seen & Gewässer' };
+    if (values.some(v => ['5', '6', '7', '10'].includes(v)))   return { cls: 'badge-wald',   label: 'Wälder & Wiesen' };
+    return { cls: 'badge-wald', label: 'Wälder & Wiesen' };
 }
 
 (async () => {
     const birds = await loadBirdList();
     birds
-            birds
         .sort((a, b) => a.artname.localeCompare(b.artname, 'de'))
         .forEach(bird => {
             const card = document.createElement('div');
@@ -150,4 +148,9 @@ document.querySelector('#warenkorb-schliessen').addEventListener('click', () => 
 backdrop.addEventListener('click', () => {
     document.querySelector('#warenkorb').classList.remove('offen');
     backdrop.classList.remove('offen');
+});
+document.querySelector('#nav-wanderliste-link')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.querySelector('#warenkorb').classList.add('offen');
+    document.querySelector('#warenkorb-backdrop').classList.add('offen');
 });
