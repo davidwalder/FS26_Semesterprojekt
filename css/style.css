@@ -27,16 +27,19 @@ h1 {
 
 h2 {
     
-    font-family: "Caveat Brush";
+    font-family: 'Inter', sans-serif;
 }
 
 h3 {
-    font-family: "Caveat Brush";
+    font-family: 'Inter', sans-serif;
 }
 
 p {
-    font-family: "Caveat Brush";
+    font-family: 'Inter', sans-serif;
+    text-align: center;
 }
+
+
 
 #p-title {
     font-family: "Space Mono";
@@ -97,25 +100,9 @@ p {
 }
 
 
-        /* sidebar titel*/
-
-#wanderliste {
-    text-align: left;
-}
 
 body {
     background-color: white;
-}
-
-#warenkorb-backdrop {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.4);
-    z-index: 199;
-}
-#warenkorb-backdrop.offen {
-    display: block;
 }
 
 #warenkorb {
@@ -124,13 +111,13 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 600px;
+    width: 512px;
     max-width: 90vw;
     max-height: 80vh;
-    background: beige;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    background: white;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 10px;
+    box-shadow: 0px 10px 7.5px rgba(0,0,0,0.1), 0px 4px 3px rgba(0,0,0,0.1);
     overflow-y: auto;
     z-index: 200;
 }
@@ -138,31 +125,86 @@ body {
     display: block;
 }
 
-#warenkorb-liste {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-}
-.warenkorb-card {
-    background-color: white;
-    font-family: "Caveat Brush";
+#warenkorb-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 24px 0;
 }
 
+#warenkorb-header-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#warenkorb-titel {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    color: #0a0a0a;
+}
+
+#warenkorb-count {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: #62748e;
+}
+
+#warenkorb-schliessen {
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: #0a0a0a;
+    opacity: 0.7;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+}
+
+#warenkorb-leer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px 40px;
+    gap: 12px;
+}
+
+#warenkorb-leer-titel {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    color: #62748e;
+    text-align: center;
+}
+
+#warenkorb-leer-text {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    color: #62748e;
+    text-align: center;
+}
+
+#warenkorb-liste {
+    display: none;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 16px 24px 24px;
+}
+
+.warenkorb-card {
+    background-color: white;
+    font-family: 'Inter', sans-serif;
+}
 
 .warenkorb-card img {
     width: 100%;
     aspect-ratio: 1/1;
     object-fit: cover;
 }
-
-
-#warenkorb-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
 #content {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -186,6 +228,7 @@ body {
     width: 100%;
     height: 192px;
     object-fit: cover;
+    object-position: center 20%;
     display: block;
     background: #e2e8f0;
 }
@@ -203,14 +246,6 @@ body {
     font-size: 16px;
     color: #0f172b;
     line-height: 16px;
-}
-
-.card-latin {
-    font-family: 'Inter', sans-serif;
-    font-style: italic;
-    font-size: 14px;
-    color: #62748e;
-    line-height: 20px;
 }
 
 .card-content {
@@ -285,23 +320,291 @@ body {
     opacity: 1;
     cursor: pointer;
 }
+.card-detail-row .card-detail-value {
+    word-break: break-word;
+}
+
+.card button {
+    display: block;
+    width: calc(100% - 48px);
+    margin: 0 24px 16px;
+    padding: 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: white;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: #314158;
+    cursor: pointer;
+}
+
+.card.ausgewaehlt button {
+    background: #0f172b;
+    color: white;
+    border-color: #0f172b;
+}
+
+/* ===== WANDERLISTE: befüllt ===== */
+
+/* Latin-Name auf der Hauptkarte */
+.card-latin {
+    font-family: 'Inter', sans-serif;
+    font-style: italic;
+    font-size: 13px;
+    color: #45556c;
+    line-height: 1.4;
+}
+
+/* Header-Unterbereich: leer vs. gefüllt */
+#warenkorb-header-leer {
+    display: flex;
+    align-items: center;
+}
+#warenkorb-header-gefuellt {
+    display: none;
+}
+
+/* «Exportieren als PDF»-Button */
+#warenkorb-exportieren {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #0f172b;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+#warenkorb-exportieren:hover {
+    background: #f8fafc;
+}
+
+/* Inhalt der befüllten Wanderliste */
+.wanderliste-inhalt {
+    padding: 20px;
+}
+
+.wanderliste-titelbereich {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-bottom: 18px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid #0f172b;
+}
+.wanderliste-titel {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 28px;
+    color: #0f172b;
+    line-height: 1.2;
+}
+.wanderliste-untertitel {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    color: #45556c;
+}
+.wanderliste-datum {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #62748e;
+}
+
+/* Sektion «Vogelarten (N)» */
+.wanderliste-sektion-titel {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    color: #0f172b;
+    padding-bottom: 9px;
+    border-bottom: 1px solid #cad5e2;
+    margin-bottom: 16px;
+}
+
+/* Karten-Container: einspaltiger Stack */
+.wanderliste-karten {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Wanderliste-Karte: gleiche Basis wie .card, aber mit dunklem Rand */
+.wanderliste-karte {
+    border: 2px solid #0f172b !important;
+    border-radius: 10px !important;
+}
+
+/* Footer */
+.wanderliste-footer {
+    border-top: 1px solid #cad5e2;
+    padding-top: 20px;
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: center;
+}
+.wanderliste-footer p {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #62748e;
+}
 
 /* Media Abstufungen */
 
-/* Tablet */
-@media (max-width: 768px) {
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+
+/* Kleiner Desktop / grosses Tablet (≤ 1200px)
+   Sidebar bleibt. Cards: 3 → 2 Spalten                      */
+@media (max-width: 1200px) {
     #content {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
-/* Mobile */
+/* Tablet (≤ 1024px)
+   Sidebar schmaler. Abstände anpassen.                        */
+@media (max-width: 1024px) {
+    #sidebar-nav {
+        width: 180px;
+        padding: 16px;
+    }
+    main {
+        margin-left: 192px;
+    }
+    #content {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    h1 {
+        font-size: 48px;
+    }
+    #warenkorb {
+        width: 480px;
+    }
+}
+
+/* Mobile (≤ 768px): Sidebar → fixe Top-Nav */
+@media (max-width: 768px) {
+
+    /* Sidebar wird zur horizontalen Top-Bar */
+    #sidebar-nav {
+        width: 100%;
+        height: 56px;
+        top: 0;
+        left: 0;
+        right: 0;
+        border-right: none;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 0 16px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    /* «Navigation»-Titel ausblenden */
+    .nav-header {
+        display: none;
+    }
+
+    /* Links horizontal anordnen */
+    .nav-links {
+        flex-direction: row;
+        gap: 4px;
+    }
+
+    /* Links kompakter */
+    .nav-link {
+        height: 36px;
+        line-height: 36px;
+        padding: 0 12px;
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
+    /* Wanderliste-Toggle ausblenden (Wanderliste ist bereits als Nav-Link da) */
+    #warenkorb-toggle {
+        display: none;
+    }
+
+    /* Main: kein left-margin mehr, padding-top für Nav-Höhe */
+    main {
+        margin-left: 0;
+        padding: 16px;
+        padding-top: 72px;
+    }
+
+    #map-container {
+        margin-top: 0;
+    }
+
+    h1 {
+        font-size: 36px;
+        margin-top: 16px;
+    }
+
+    #content {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    #warenkorb {
+        width: 92vw;
+        max-height: 88vh;
+    }
+
+    .wanderliste-titel {
+        font-size: 22px;
+    }
+}
+
+/* Mobile Portrait (≤ 480px) */
 @media (max-width: 480px) {
+
+    /* Nav-Links bei sehr kleinen Screens noch kompakter */
+    .nav-link {
+        padding: 0 8px;
+        font-size: 13px;
+    }
+
+    h1 {
+        font-size: 28px;
+    }
+
     #content {
         grid-template-columns: repeat(1, 1fr);
+        gap: 8px;
+    }
+
+    #warenkorb {
+        width: 96vw;
+        max-height: 92vh;
+        border-radius: 8px;
     }
 
     #warenkorb-liste {
         grid-template-columns: repeat(1, 1fr);
+    }
+
+    .card img {
+        height: 160px;
+    }
+
+    .wanderliste-inhalt {
+        padding: 14px;
+    }
+
+    .wanderliste-titel {
+        font-size: 20px;
+    }
+
+    .wanderliste-sektion-titel {
+        font-size: 17px;
     }
 }

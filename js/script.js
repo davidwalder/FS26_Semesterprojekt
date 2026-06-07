@@ -27,16 +27,6 @@ async function fetchFromBridge(endpoint, id = null) {
 let all_birds = [];
 let warenkorb = [];
 
-
-//(async () => {
-    // all_birds = await loadBirdList();
-   //  all_infos = await loadSpeciesInfo(700);
- //console.log('Bird list:', all_birds);
- //console.log('Species 700:', all_infos);
-   // showBirdsList('');
-   // showSpeciesInfo('');
-//})();
-
 (async () => {
     all_birds = await loadBirdList();
 })();
@@ -442,145 +432,247 @@ const detailMap = {
     "5060": ["8","9"],
 };
 
+// ── Badge-Logik (global, damit updateWarenkorb darauf zugreifen kann) ──
+function getBadgeInfo(values) {
+    if (!Array.isArray(values)) values = values ? [String(values)] : [];
+    if (values.some(v => ['1', '4'].includes(v)))            return { cls: 'badge-berg',   label: 'Berglandschaften' };
+    if (values.some(v => ['2', '3', '8', '9'].includes(v)))  return { cls: 'badge-wasser', label: 'Seen & Gewässer' };
+    if (values.some(v => ['5', '6', '7', '10'].includes(v))) return { cls: 'badge-wald',   label: 'Wälder & Wiesen' };
+    return { cls: 'badge-wald', label: 'Wälder & Wiesen' };
+}
+
 // Daten darstellen
 function showSpeciesInfo(eigenschaften){}
+
 function showBirdsList(artid){
     // container leeren
     container.innerHTML = '';
 
     // daten filtern
-  const filterValues = artid ? artid.split(',') : [];
+    const filterValues = artid ? artid.split(',') : [];
     let filtered_birds = artid === '' || artid === undefined
-    ? all_birds
-    : all_birds.filter(bird =>
-        filterValues.some(f => detailMap[bird.artid]?.includes(f) ?? false)
-);
+        ? all_birds
+        : all_birds.filter(bird =>
+            filterValues.some(f => detailMap[bird.artid]?.includes(f) ?? false)
+        );
 
     if (artid === '' || artid === undefined) {
         filtered_birds = all_birds;
     }
 
-function getBadgeInfo(values) {
-    if (!Array.isArray(values)) values = values ? [String(values)] : [];
-    if (values.some(v => ['1', '4'].includes(v)))              return { cls: 'badge-berg',   label: 'Berglandschaften' };
-    if (values.some(v => ['2', '3', '8', '9'].includes(v)))    return { cls: 'badge-wasser', label: 'Seen & Gewässer' };
-    if (values.some(v => ['5', '6', '7', '10'].includes(v)))   return { cls: 'badge-wald',   label: 'Wälder & Wiesen' };
-    return { cls: 'badge-wald', label: 'Wälder & Wiesen' };
-}
+    filtered_birds.forEach(bird => {
+        const card = document.createElement('div');
+        card.classList.add('card');
 
-filtered_birds.forEach(bird => {
-    const card = document.createElement('div');
-    card.classList.add('card');
+        const image = document.createElement('img');
+        image.src = `https://www.vogelwarte.ch/wp-content/uploads/2026/03/${bird.artid}_1.jpg`;
+        image.alt = bird.artname;
 
-    const image = document.createElement('img');
-    image.src = `https://www.vogelwarte.ch/wp-content/uploads/2026/03/${bird.artid}_1.jpg`;
-    image.alt = bird.artname;
+        const cardTitle = document.createElement('div');
+        cardTitle.classList.add('card-title');
 
-    const cardTitle = document.createElement('div');
-    cardTitle.classList.add('card-title');
-
-    const name = document.createElement('h2');
-    name.innerText = bird.artname;
-
-    const latin = document.createElement('p');
-    latin.classList.add('card-latin');
-    latin.innerText = bird.artname_lat || '';
-
-    cardTitle.appendChild(name);
-    cardTitle.appendChild(latin);
-
-    const cardContent = document.createElement('div');
-    cardContent.classList.add('card-content');
-
-    const badge = document.createElement('span');
-    const badgeInfo = getBadgeInfo(bird.filterlebensraum);
-    badge.classList.add('card-badge', badgeInfo.cls);
-    badge.innerText = badgeInfo.label;
-
-    const details = document.createElement('div');
-    details.classList.add('card-details');
-
-    const groesseRow = document.createElement('div');
-    groesseRow.classList.add('card-detail-row');
-    groesseRow.innerHTML = `<span class="card-detail-label">Größe:</span><span class="card-detail-value">—</span>`;
-
-    const merkmaleRow = document.createElement('div');
-    merkmaleRow.classList.add('card-detail-row');
-    merkmaleRow.innerHTML = `<span class="card-detail-label">Merkmale:</span><span class="card-detail-value">—</span>`;
-
-    details.appendChild(groesseRow);
-    details.appendChild(merkmaleRow);
-    cardContent.appendChild(badge);
-    cardContent.appendChild(details);
-
-    const button = document.createElement('button');
-    const bereitsImWarenkorb = warenkorb.some(b => b.artid === bird.artid);
-    button.innerText = bereitsImWarenkorb ? '✓ Auf der Liste' : '+ Zur Wanderliste';
-    if (bereitsImWarenkorb) card.classList.add('ausgewaehlt');
-
-    card.addEventListener('click', async () => {
-        const detail = await loadSpeciesInfo(bird.artid);
-        if (detail?.eigenschaften) {
-            groesseRow.querySelector('.card-detail-value').innerText = detail.eigenschaften.groesse || '—';
-            merkmaleRow.querySelector('.card-detail-value').innerText = detail.eigenschaften.merkmale || '—';
-        }
-    });
-
-    button.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const index = warenkorb.findIndex(b => b.artid === bird.artid);
-        if (index === -1) {
-            warenkorb.push(bird);
-            button.innerText = '✓ Auf der Liste';
-            card.classList.add('ausgewaehlt');
-        } else {
-            warenkorb.splice(index, 1);
-            button.innerText = '+ Zur Wanderliste';
-            card.classList.remove('ausgewaehlt');
-        }
-        updateWarenkorb();
-    });
-
-    card.appendChild(image);
-    card.appendChild(cardTitle);
-    card.appendChild(cardContent);
-    card.appendChild(button);
-    container.appendChild(card);
-});
-}
-function updateWarenkorb() {
-    const warenkorbContainer = document.querySelector('#warenkorb-liste');
-    warenkorbContainer.innerHTML = '';
-    warenkorb.forEach(bird => {
-        const eintrag = document.createElement('div');
-        eintrag.classList.add('warenkorb-card');
-        
-        const bild = document.createElement('img');
-        bild.src = `https://www.vogelwarte.ch/wp-content/uploads/2026/03/${bird.artid}_1.jpg`;
-        bild.alt = `Bild von ${bird.artname}`;
-
-        const name = document.createElement('p');
+        const name = document.createElement('h2');
         name.innerText = bird.artname;
 
-        const lebensraum = document.createElement('p');
-        lebensraum.innerText = lebensraumMap[bird.filterlebensraum] || 'Unbekannt';
+        const latin = document.createElement('p');
+        latin.classList.add('card-latin');
+        latin.innerText = '';
 
-        eintrag.appendChild(bild);
-        eintrag.appendChild(name);
-        eintrag.appendChild(lebensraum);
-        warenkorbContainer.appendChild(eintrag);
+        cardTitle.appendChild(name);
+        cardTitle.appendChild(latin);
+
+        const cardContent = document.createElement('div');
+        cardContent.classList.add('card-content');
+
+        const badge = document.createElement('span');
+        const badgeInfo = getBadgeInfo(bird.filterlebensraum);
+        badge.classList.add('card-badge', badgeInfo.cls);
+        badge.innerText = badgeInfo.label;
+
+        const details = document.createElement('div');
+        details.classList.add('card-details');
+
+        const groesseRow = document.createElement('div');
+        groesseRow.classList.add('card-detail-row');
+        groesseRow.innerHTML = `<span class="card-detail-label">Größe:</span><span class="card-detail-value">—</span>`;
+
+        const nahrungRow = document.createElement('div');
+        nahrungRow.classList.add('card-detail-row');
+        nahrungRow.innerHTML = `<span class="card-detail-label">Nahrung:</span><span class="card-detail-value">—</span>`;
+
+        const infosRow = document.createElement('div');
+        infosRow.classList.add('card-detail-row');
+        infosRow.style.display = 'none';
+        infosRow.innerHTML = `<span class="card-detail-label">Infos:</span><span class="card-detail-value">—</span>`;
+
+        details.appendChild(groesseRow);
+        details.appendChild(nahrungRow);
+        details.appendChild(infosRow);
+        cardContent.appendChild(badge);
+        cardContent.appendChild(details);
+
+        const button = document.createElement('button');
+        const bereitsImWarenkorb = warenkorb.some(b => b.artid === bird.artid);
+        button.innerText = bereitsImWarenkorb ? '✓ Auf der Liste' : '+ Zur Wanderliste';
+        if (bereitsImWarenkorb) card.classList.add('ausgewaehlt');
+
+        loadSpeciesInfo(bird.artid).then(detail => {
+            if (!detail) return;
+            if (detail.artname_lat) latin.innerText = detail.artname_lat;
+            if (detail.eigenschaften) {
+                const laenge = detail.eigenschaften.laenge_cm;
+                groesseRow.querySelector('.card-detail-value').innerText = laenge ? laenge + ' cm' : '—';
+                nahrungRow.querySelector('.card-detail-value').innerText = detail.eigenschaften.nahrung || '—';
+            }
+            if (detail.infos) {
+                infosRow.querySelector('.card-detail-value').innerText = detail.infos;
+                infosRow.style.display = 'flex';
+            }
+        });
+
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const index = warenkorb.findIndex(b => b.artid === bird.artid);
+            if (index === -1) {
+                warenkorb.push(bird);
+                button.innerText = '✓ Auf der Liste';
+                card.classList.add('ausgewaehlt');
+            } else {
+                warenkorb.splice(index, 1);
+                button.innerText = '+ Zur Wanderliste';
+                card.classList.remove('ausgewaehlt');
+            }
+            updateWarenkorb();
+        });
+
+        card.appendChild(image);
+        card.appendChild(cardTitle);
+        card.appendChild(cardContent);
+        card.appendChild(button);
+        container.appendChild(card);
     });
 }
 
-// -> filtern
-//const filter_select = document.querySelector('#filter');
-//filter_select.addEventListener('change', function(event) {
-    // filterwert auslesen
-    //const selected_filter = event.target.value;
-    // gefilterte daten anzeigen
-   // showBirdsList(selected_filter)
-    //showSpeciesInfo(selected_filter)
-//})
+// ── Wanderliste aktualisieren ──
+function updateWarenkorb() {
+    const liste          = document.querySelector('#warenkorb-liste');
+    const leer           = document.querySelector('#warenkorb-leer');
+    const count          = document.querySelector('#warenkorb-count');
+    const headerLeer     = document.querySelector('#warenkorb-header-leer');
+    const headerGefuellt = document.querySelector('#warenkorb-header-gefuellt');
+
+    count.textContent = `(${warenkorb.length})`;
+
+    if (warenkorb.length === 0) {
+        leer.style.display           = 'flex';
+        liste.style.display          = 'none';
+        headerLeer.style.display     = 'flex';
+        headerGefuellt.style.display = 'none';
+        liste.innerHTML = '';
+        return;
+    }
+
+    leer.style.display           = 'none';
+    liste.style.display          = 'block';
+    headerLeer.style.display     = 'none';
+    headerGefuellt.style.display = 'flex';
+
+    const heute = new Date().toLocaleDateString('de-CH', {
+        day: 'numeric', month: 'long', year: 'numeric'
+    });
+
+    liste.innerHTML = `
+        <div class="wanderliste-inhalt">
+            <div class="wanderliste-titelbereich">
+                <p class="wanderliste-titel">Meine Wanderliste</p>
+                <p class="wanderliste-untertitel">Vogelführer für die Schweizer Natur</p>
+                <p class="wanderliste-datum">Erstellt am ${heute}</p>
+            </div>
+            <h3 class="wanderliste-sektion-titel">Vogelarten (${warenkorb.length})</h3>
+            <div class="wanderliste-karten" id="wanderliste-karten-container"></div>
+            <div class="wanderliste-footer">
+                <p>Viel Freude beim Vogelbeobachten in der Schweizer Natur!</p>
+                <p>Erstellt mit voegle.ch</p>
+            </div>
+        </div>
+    `;
+
+    const kartenContainer = document.querySelector('#wanderliste-karten-container');
+
+    warenkorb.forEach(bird => {
+        const badgeInfo = getBadgeInfo(bird.filterlebensraum);
+
+        const karte = document.createElement('div');
+        karte.classList.add('card', 'wanderliste-karte');
+
+        const img = document.createElement('img');
+        img.src = `https://www.vogelwarte.ch/wp-content/uploads/2026/03/${bird.artid}_1.jpg`;
+        img.alt = bird.artname;
+
+        const cardTitle = document.createElement('div');
+        cardTitle.classList.add('card-title');
+
+        const name = document.createElement('h2');
+        name.innerText = bird.artname;
+
+        const latin = document.createElement('p');
+        latin.classList.add('card-latin');
+        latin.innerText = '';
+
+        cardTitle.appendChild(name);
+        cardTitle.appendChild(latin);
+
+        const cardContent = document.createElement('div');
+        cardContent.classList.add('card-content');
+
+        const badge = document.createElement('span');
+        badge.classList.add('card-badge', badgeInfo.cls);
+        badge.innerText = badgeInfo.label;
+
+        const details = document.createElement('div');
+        details.classList.add('card-details');
+
+        const groesseRow = document.createElement('div');
+        groesseRow.classList.add('card-detail-row');
+        groesseRow.innerHTML = `<span class="card-detail-label">Größe:</span><span class="card-detail-value">—</span>`;
+
+        const nahrungRow = document.createElement('div');
+        nahrungRow.classList.add('card-detail-row');
+        nahrungRow.innerHTML = `<span class="card-detail-label">Nahrung:</span><span class="card-detail-value">—</span>`;
+
+        const infosRow = document.createElement('div');
+        infosRow.classList.add('card-detail-row');
+        infosRow.style.display = 'none';
+        infosRow.innerHTML = `<span class="card-detail-label">Infos:</span><span class="card-detail-value">—</span>`;
+
+        details.appendChild(groesseRow);
+        details.appendChild(nahrungRow);
+        details.appendChild(infosRow);
+        cardContent.appendChild(badge);
+        cardContent.appendChild(details);
+
+        karte.appendChild(img);
+        karte.appendChild(cardTitle);
+        karte.appendChild(cardContent);
+        kartenContainer.appendChild(karte);
+
+        loadSpeciesInfo(bird.artid).then(detail => {
+            if (!detail) return;
+            if (detail.artname_lat) latin.innerText = detail.artname_lat;
+            if (detail.eigenschaften) {
+                const laenge = detail.eigenschaften.laenge_cm;
+                groesseRow.querySelector('.card-detail-value').innerText = laenge ? laenge + ' cm' : '—';
+                nahrungRow.querySelector('.card-detail-value').innerText = detail.eigenschaften.nahrung || '—';
+            }
+            if (detail.infos) {
+                infosRow.querySelector('.card-detail-value').innerText = detail.infos;
+                infosRow.style.display = 'flex';
+            }
+        });
+    });
+}
+
+// ── Event-Listeners ──
 const backdrop = document.querySelector('#warenkorb-backdrop');
 
 document.querySelector('#warenkorb-toggle').addEventListener('click', () => {
@@ -600,12 +692,9 @@ document.querySelector('#nav-wanderliste-link')?.addEventListener('click', (e) =
     document.querySelector('#warenkorb').classList.add('offen');
     backdrop.classList.add('offen');
 });
-
-//document.querySelectorAll('#lebensraum-map path[data-filter]').forEach(path => {
-    //path.addEventListener('click', () => {
-        //showBirdsList(path.dataset.filter);
-    //});
-//});
+document.querySelector('#warenkorb-exportieren')?.addEventListener('click', () => {
+    window.print();
+});
 
 const regionFilterMap = {
     'berg': '1,4',

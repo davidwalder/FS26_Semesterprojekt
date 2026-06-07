@@ -6,6 +6,7 @@
     <title>Voegle.ch</title>
     <link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Inter:wght@500&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 </head>
 <body>
 <header>
@@ -20,14 +21,42 @@
     </ul>
 </nav>
     <button id="warenkorb-toggle">Meine Wanderliste 🐦</button>
-    <div id="warenkorb-backdrop"></div>
-    <aside id="warenkorb">
+<div id="warenkorb-backdrop"></div>
+<aside id="warenkorb">
+
+    <!-- Header: wird per JS zwischen leer/gefüllt umgeschaltet -->
     <div id="warenkorb-header">
-        <h2 id="wanderliste">Meine Wanderliste</h2>
+
+        <!-- Leerer Zustand: Titel + Zähler -->
+        <div id="warenkorb-header-leer">
+            <div id="warenkorb-header-title">
+                <span id="warenkorb-titel">Meine Wanderliste</span>
+                <span id="warenkorb-count">(0)</span>
+            </div>
+        </div>
+
+        <!-- Befüllter Zustand: Export-Button -->
+        <div id="warenkorb-header-gefuellt">
+            <button id="warenkorb-exportieren">
+                Drucken
+            </button>
+        </div>
+
+        <!-- Schliessen (immer sichtbar) -->
         <button id="warenkorb-schliessen">✕</button>
     </div>
+
+    <!-- Leerer Zustand -->
+    <div id="warenkorb-leer">
+        <lottie-player src="assets/lottie-wanderliste.json" background="transparent" speed="1" style="width: 120px; height: 120px;" loop autoplay></lottie-player>
+        <p id="warenkorb-leer-titel">Keine Einträge in der Wanderliste</p>
+        <p id="warenkorb-leer-text">Wähle Orte und Vögel aus, um sie hier zu sehen</p>
+    </div>
+
+    <!-- Befüllter Zustand (wird per JS befüllt) -->
     <div id="warenkorb-liste"></div>
-    </aside>
+
+</aside>
     </header>
 
     <main>
@@ -81,8 +110,6 @@
         <div id="content"></div>
     </main>
     <footer>
-        <p>This is the footer of the page.</p>
-
     </footer>
     <script src="js/script.js" type="module"></script>
 </body>
